@@ -1,0 +1,61 @@
+# Pro-angular
+The road to explore
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../static/components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../static/components/jquery/dist/jquery.js"></script>
+    <script src="../static/components/angular/angular.js"></script>
+</head>
+<body>  <!--'^faDir'不仅在当前元素上查找，而且在父级里查找-->
+  <sixth class="container" seventh></sixth>  <!-- 'faDir'在当前元素中查找-->
+  <sixth class="container"></sixth>   <!-- 'faDir'在当前元素中查找-->
+<script>
+    var myapp = angular.module('app', []);
+    myapp.controller('myctrl',['$scope',function($scope){
+    }]);
+    //定义指令
+    myapp.directive('sixth',[function(){
+        return {
+            restrict:'EA',
+            templateUrl:'api/sixth-dir.html',
+           // require:'seventh',    //向seventh里面的控制器的拿一些方法 <!-- 'faDir'在当前元素中查找-->
+           // require:'^seventh',   //向seventh里面的控制器的拿一些方法  <!--'^faDir'不仅在当前元素上查找，而且在父级里查找-->
+           // require:'^^seventh',   //向seventh里面的控制器的拿一些方法  '^^faDir' 只在父级里查找
+           require:'?seventh',      //向seventh里面的控制器的拿一些方法 . '?faDir' 在当前元素中找，即使查找不到也不会报错
+
+            compile:function(tEle,tAttr){
+                return {
+                    pre:function(){
+                        console.log('DOM正在加载。。。')
+                    },
+                    post:function(scope,ele,attrs,ctrl){  //ctrl控制器，用了require才会有的
+                       // angular.element();  //参数是dom或者是html的字符串  element相当于jquery的$
+                       // angular.element('h1').css("background","red");  //报错，不被支持
+                        var p=document.querySelector('p');
+                        angular.element(p).css("color","red");
+                        console.log(scope.a);
+                        console.log(ctrl.num());
+                    }
+                }
+            }
+        }
+    }]);
+    //定义指令
+    myapp.directive('seventh',function(){
+        return {
+            restrict:'EA',
+            controller:['$scope',function($scope){
+                $scope.a='123';
+                this.num=function(){
+                    return 3;
+                }
+            }]
+        }
+    });
+    //思考：指令要调用控制器的内容怎么办？不可能在自定义控制器里写不好调用
+</script>
+</body>
+</html>
